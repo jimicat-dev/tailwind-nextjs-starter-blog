@@ -1,91 +1,146 @@
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
+import Image from '@/components/Image'
+import NewsletterWidget from '@/components/NewsletterWidget'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
-import NewsletterForm from 'pliny/ui/NewsletterForm'
+import type { Authors, Blog } from 'contentlayer/generated'
+import type { CoreContent } from 'pliny/utils/contentlayer'
 
 const MAX_DISPLAY = 5
+const MAX_TAGS = 12
 
-export default function Home({ posts }) {
+interface Props {
+  posts: CoreContent<Blog>[]
+  author?: CoreContent<Authors>
+  tags: Record<string, number>
+}
+
+export default function Home({ posts, author, tags }: Props) {
+  const sortedTags = Object.entries(tags).sort(([, a], [, b]) => b - a)
+
   return (
-    <>
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        <div className="space-y-2 pt-6 pb-8 md:space-y-5">
-          <h1 className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100">
-            Latest
-          </h1>
-          <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
-            {siteMetadata.description}
-          </p>
-        </div>
-        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-          {!posts.length && 'No posts found.'}
+    <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
+      {/* Main: post list */}
+      <div className="min-w-0 flex-1">
+        <ul className="divide-y divide-gray-200">
+          {!posts.length && <li className="py-10 text-gray-500">No posts found.</li>}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
-            const { slug, date, title, summary, tags } = post
+            const { slug, date, title, summary, tags: postTags } = post
             return (
-              <li key={slug} className="py-12">
-                <article>
-                  <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                    <dl>
-                      <dt className="sr-only">Published on</dt>
-                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                        <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
-                      </dd>
-                    </dl>
-                    <div className="space-y-5 xl:col-span-3">
-                      <div className="space-y-6">
-                        <div>
-                          <h2 className="text-2xl leading-8 font-bold tracking-tight">
-                            <Link
-                              href={`/blog/${slug}`}
-                              className="text-gray-900 dark:text-gray-100"
-                            >
-                              {title}
-                            </Link>
-                          </h2>
-                          <div className="flex flex-wrap">
-                            {tags.map((tag) => (
-                              <Tag key={tag} text={tag} />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
-                        </div>
-                      </div>
-                      <div className="text-base leading-6 font-medium">
-                        <Link
-                          href={`/blog/${slug}`}
-                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-                          aria-label={`Read more: "${title}"`}
-                        >
-                          Read more &rarr;
-                        </Link>
-                      </div>
+              <li key={slug} className="py-10">
+                <article className="space-y-3">
+                  <dl>
+                    <dt className="sr-only">Published on</dt>
+                    <dd className="text-sm font-medium text-gray-400">
+                      <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
+                    </dd>
+                  </dl>
+                  <div className="space-y-2">
+                    <h2 className="text-xl leading-snug font-bold tracking-tight">
+                      <Link href={`/blog/${slug}`} className="text-[#112E23] hover:text-[#1A4D3A]">
+                        {title}
+                      </Link>
+                    </h2>
+                    <div className="flex flex-wrap">
+                      {postTags.map((tag) => (
+                        <Tag key={tag} text={tag} />
+                      ))}
                     </div>
+                  </div>
+                  <p className="text-sm leading-7 text-gray-500">{summary}</p>
+                  <div className="text-sm font-medium">
+                    <Link
+                      href={`/blog/${slug}`}
+                      className="text-primary-500 hover:text-primary-600"
+                      aria-label={`Read more: "${title}"`}
+                    >
+                      Read more &rarr;
+                    </Link>
                   </div>
                 </article>
               </li>
             )
           })}
         </ul>
+        {posts.length > MAX_DISPLAY && (
+          <div className="flex justify-center pt-2 text-sm font-medium">
+            <Link
+              href="/blog"
+              className="text-primary-500 hover:text-primary-600"
+              aria-label="All posts"
+            >
+              All Posts &rarr;
+            </Link>
+          </div>
+        )}
       </div>
-      {posts.length > MAX_DISPLAY && (
-        <div className="flex justify-end text-base leading-6 font-medium">
-          <Link
-            href="/blog"
-            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-            aria-label="All posts"
-          >
-            All Posts &rarr;
-          </Link>
+
+      {/* Sidebar */}
+      <aside className="w-full shrink-0 lg:w-56 xl:w-60">
+        <div className="sticky top-24 space-y-8">
+          {/* About Me */}
+          {author && (
+            <div>
+              <h3 className="mb-4 border-b-2 border-[#1A4D3A] pb-1 text-sm font-bold text-[#1A4D3A]">
+                關於我
+              </h3>
+              {author.avatar && (
+                <Image
+                  src={author.avatar}
+                  alt={author.name}
+                  width={72}
+                  height={72}
+                  className="mb-3 rounded-full"
+                />
+              )}
+              <p className="font-semibold text-[#112E23]">{author.name}</p>
+              {author.occupation && (
+                <p className="mt-1 text-sm text-gray-500">{author.occupation}</p>
+              )}
+              {author.company && <p className="text-sm text-gray-500">{author.company}</p>}
+              <Link
+                href="/about"
+                className="mt-3 inline-block rounded border border-[#1A4D3A] px-3 py-1 text-sm font-medium text-[#1A4D3A] transition-colors hover:bg-[#1A4D3A] hover:text-white"
+              >
+                了解更多
+              </Link>
+            </div>
+          )}
+
+          {/* Categories */}
+          {sortedTags.length > 0 && (
+            <div>
+              <h3 className="mb-4 border-b-2 border-[#1A4D3A] pb-1 text-sm font-bold text-[#1A4D3A]">
+                文章分類
+              </h3>
+              <ul className="space-y-1">
+                {sortedTags.slice(0, MAX_TAGS).map(([tagSlug, count]) => (
+                  <li key={tagSlug}>
+                    <Link
+                      href={`/tags/${tagSlug}`}
+                      className="flex items-center justify-between text-sm text-gray-600 hover:text-[#8B2635]"
+                    >
+                      <span>{tagSlug.replace(/-/g, ' ')}</span>
+                      <span className="text-xs text-gray-400">({count})</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Newsletter */}
+          {siteMetadata.newsletter?.provider && (
+            <div>
+              <h3 className="mb-4 border-b-2 border-[#1A4D3A] pb-1 text-sm font-bold text-[#1A4D3A]">
+                電子報
+              </h3>
+              <NewsletterWidget />
+            </div>
+          )}
         </div>
-      )}
-      {siteMetadata.newsletter?.provider && (
-        <div className="flex items-center justify-center pt-4">
-          <NewsletterForm />
-        </div>
-      )}
-    </>
+      </aside>
+    </div>
   )
 }
