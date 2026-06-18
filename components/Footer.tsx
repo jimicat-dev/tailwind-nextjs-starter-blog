@@ -4,8 +4,8 @@ import SocialIcon from '@/components/social-icons'
 
 export default function Footer() {
   return (
-    <footer>
-      <div className="mt-16 flex flex-col items-center">
+    <footer className="mt-16 w-full bg-[#1A4D3A]">
+      <div className="mx-auto flex max-w-5xl flex-col items-center px-4 py-10 sm:px-6 xl:px-0">
         <div className="mb-3 flex space-x-4">
           <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={6} />
           <SocialIcon kind="github" href={siteMetadata.github} size={6} />
@@ -19,15 +19,20 @@ export default function Footer() {
           <SocialIcon kind="threads" href={siteMetadata.threads} size={6} />
           <SocialIcon kind="medium" href={siteMetadata.medium} size={6} />
         </div>
-        <div className="mb-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
+        <div className="mb-2 flex space-x-2 text-sm text-[#C29B74]">
           <div>{siteMetadata.author}</div>
           <div>{` • `}</div>
           <div>{`© ${new Date().getFullYear()}`}</div>
           <div>{` • `}</div>
-          <Link href="/">{siteMetadata.title}</Link>
+          <Link href="/" className="hover:text-white">
+            {siteMetadata.title}
+          </Link>
         </div>
-        <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-          <Link href="https://github.com/timlrx/tailwind-nextjs-starter-blog">
+        <div className="mb-2 text-sm text-[#C29B74]">
+          <Link
+            href="https://github.com/timlrx/tailwind-nextjs-starter-blog"
+            className="hover:text-white"
+          >
             Tailwind Nextjs Theme
           </Link>
         </div>
