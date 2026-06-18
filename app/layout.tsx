@@ -2,9 +2,10 @@ import 'css/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
 
-import { Space_Grotesk } from 'next/font/google'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
+import { Noto_Sans_TC } from 'next/font/google'
+import { Analytics as PlinyAnalytics, AnalyticsConfig } from 'pliny/analytics'
 import { SearchProvider, SearchConfig } from 'pliny/search'
+import { Analytics } from '@vercel/analytics/next'
 import Header from '@/components/Header'
 import SectionContainer from '@/components/SectionContainer'
 import Footer from '@/components/Footer'
@@ -12,10 +13,11 @@ import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
 
-const space_grotesk = Space_Grotesk({
+const noto_sans_tc = Noto_Sans_TC({
   subsets: ['latin'],
+  weight: ['400', '500', '700'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-noto-sans-tc',
 })
 
 export const metadata: Metadata = {
@@ -64,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang={siteMetadata.language}
-      className={`${space_grotesk.variable} scroll-smooth`}
+      className={`${noto_sans_tc.variable} scroll-smooth`}
       suppressHydrationWarning
     >
       <link
@@ -94,9 +96,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       <link rel="alternate" type="application/rss+xml" href={`${basePath}/feed.xml`} />
-      <body className="bg-[#FBF9F1] text-[#112E23] antialiased">
+      <body className="flex min-h-screen flex-col bg-[#FBF9F1] text-[#112E23] antialiased">
         <ThemeProviders>
-          <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+          <PlinyAnalytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+          <Analytics />
           <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
             <Header />
             <SectionContainer>

@@ -11,35 +11,38 @@ const Header = () => {
 
   return (
     <header className={`w-full bg-[#1A4D3A]${stickyClass}`}>
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6 sm:px-6 xl:px-0">
+      <div className="relative mx-auto flex max-w-5xl items-center justify-between px-4 py-5 sm:px-6 xl:px-0">
+        {/* Left: Logo */}
         <Link href="/" aria-label={siteMetadata.headerTitle}>
-          <div className="flex items-center">
-            <div className="mr-3">
-              <Logo />
-            </div>
+          <div className="flex items-center gap-2">
+            <Logo />
             {typeof siteMetadata.headerTitle === 'string' ? (
-              <div className="hidden h-6 text-2xl font-semibold text-white sm:block">
+              <span className="hidden text-xl font-semibold text-white sm:block">
                 {siteMetadata.headerTitle}
-              </div>
+              </span>
             ) : (
               siteMetadata.headerTitle
             )}
           </div>
         </Link>
-        <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
-          <div className="no-scrollbar hidden max-w-40 items-center gap-x-4 overflow-x-auto sm:flex md:max-w-72 lg:max-w-96">
-            {headerNavLinks
-              .filter((link) => link.href !== '/')
-              .map((link) => (
-                <Link
-                  key={link.title}
-                  href={link.href}
-                  className="m-1 font-medium text-white hover:text-[#8B2635]"
-                >
-                  {link.title}
-                </Link>
-              ))}
-          </div>
+
+        {/* Center: Nav links (truly centered via absolute) */}
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-x-6 sm:flex">
+          {headerNavLinks
+            .filter((link) => link.href !== '/')
+            .map((link) => (
+              <Link
+                key={link.title}
+                href={link.href}
+                className="font-medium whitespace-nowrap text-white hover:text-[#8B2635]"
+              >
+                {link.title}
+              </Link>
+            ))}
+        </nav>
+
+        {/* Right: Search + Theme + Mobile */}
+        <div className="flex items-center gap-x-4">
           <SearchButton />
           <ThemeSwitch />
           <MobileNav />
